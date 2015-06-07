@@ -1,41 +1,56 @@
-# == Class: lamer2
+# == Class: lamernews
 #
-# Full description of class lamer2 here.
+# This puppet module installs 
+# https://github.com/antirez/lamernews
 #
 # === Parameters
 #
-# Document parameters here.
-#
-# [*sample_parameter*]
-#   Explanation of what this parameter affects and what it defaults to.
-#   e.g. "Specify one or more upstream ntp servers as an array."
-#
-# === Variables
-#
-# Here you should define a list of variables that this module would require.
-#
-# [*sample_variable*]
-#   Explanation of how this variable affects the funtion of this class and if
-#   it has a default. e.g. "The parameter enc_ntp_servers must be set by the
-#   External Node Classifier as a comma separated list of hostnames." (Note,
-#   global variables should be avoided in favor of class parameters as
-#   of Puppet 2.6.)
+# None so far
 #
 # === Examples
 #
-#  class { 'lamer2':
-#    servers => [ 'pool.ntp.org', 'ntp.local.company.com' ],
+#  class { 'lamernews':
 #  }
 #
 # === Authors
 #
-# Author Name <author@domain.com>
+# Max Vernimmen <m.vernimmen@gmail.com>
 #
 # === Copyright
 #
-# Copyright 2015 Your name here, unless otherwise noted.
+# Copyright 2015 M. Vernimmen
 #
-class lamer2 {
+
+class lamernews {
+
+  package {
+    # Not really required according to antirzet, but should make it go quicker
+    ['openssl',
+     'openssl-devel']: # Devel is needed for the rubysl-openssl gem.
+      ensure => 'installed';
+    # Needed to compile hiredis
+    'gcc':
+      ensure => 'installed';
+  }
+
+
+  package {
+    ['sinatra',
+     'hiredis',
+     'json',
+     'ruby-hmac',
+     'rubysl-net-smtp']:
+      ensure   => 'installed',
+      provider => 'gem',
+    ;
+
+
+    'rubysl-openssl':
+      ensure   => '2.1.0', # Newer versions need rubinius
+      provider => 'gem',
+      require  => Package['openssl-devel'],
+    ;
+  }
 
 
 }

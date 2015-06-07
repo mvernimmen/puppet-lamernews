@@ -1,12 +1,12 @@
 {
-  "name": "mvernimmen-lamer2",
+  "name": "mvernimmen-antirez_lamernews",
   "version": "0.1.0",
-  "author": "M. Vernimmen",
-  "summary": "manage lamernews",
-  "license": "GPL",
-  "source": "github",
-  "project_page": "github",
-  "issues_url": "github",
+  "author": "mvernimmen",
+  "summary": "manage antirez/lamernews",
+  "license": "GPLv3",
+  "source": "https://github.com/mvernimmen/puppet-lamernews",
+  "project_page": "https://github.com/mvernimmen/puppet-lamernews",
+  "issues_url": "https://github.com/mvernimmen/puppet-lamernews",
   "dependencies": [
     {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"}
   ]
