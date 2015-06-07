@@ -1,4 +1,44 @@
 # lamernews
+node lamernewsnode {
+
+  class { 'redis::install':
+    redis_version  => '2.8.19-2.el7',
+    redis_package  => true,
+  } ->
+  redis::server {
+    'instance1':
+      redis_memory    => '1g',
+      redis_ip        => '0.0.0.0',
+      redis_port      => 10000,
+      redis_mempolicy => 'allkeys-lru',
+      redis_timeout   => 0,
+      redis_nr_dbs    => 16,
+      redis_loglevel  => 'notice',
+      running         => true,
+      enabled         => true
+  }
+
+  package {
+     'gcc-c++':
+      ensure => installed,
+    ;
+  }
+  class {'passenger':
+    passenger_version      => '5.0.8',
+    passenger_provider     => 'gem',
+    passenger_package      => 'passenger',
+    gem_path               => '/usr/local/share/gems/gems/',
+  }
+
+
+#  class { 'apache':
+#  }
+
+  class {'lamernews':}
+
+
+}
+
 
 #### Table of Contents
 
@@ -15,65 +55,96 @@
 
 ## Overview
 
-A one-maybe-two sentence summary of what the module does/what problem it solves.
-This is your 30 second elevator pitch for your module. Consider including
-OS/Puppet version it works with.
+This puppet module installs the https://github.com/antirez/lamernews webapp.
 
 ## Module Description
 
-If applicable, this section should have a brief description of the technology
-the module integrates with and what that integration enables. This section
-should answer the questions: "What does this module *do*?" and "Why would I use
-it?"
+This module automates the installation of the ruby gems and the lamernews
+installation.
 
-If your module has a range of functionality (installation, configuration,
-management, etc.) this is the time to mention it.
+You should use this module if you find yourself setting up machines by hand.
+Currently it only installs and does not allow for any configuration. It is a
+proof of concept only.
 
 ## Setup
 
 ### What lamernews affects
 
-* A list of files, packages, services, or operations that the module will alter,
-  impact, or execute on the system it's installed on.
-* This is a great place to stick any warnings.
-* Can be in list or paragraph form.
+* lamernews installs several gems.
 
 ### Setup Requirements **OPTIONAL**
 
-If your module requires anything extra before setting up (pluginsync enabled,
-etc.), mention it here.
+It assumes several things have already been installed and configured:
+- redis (must listen on port 10000)
+- apache
+- passenger
 
 ### Beginning with lamernews
 
-The very basic steps needed for a user to get the module up and running.
+* Set up a puppet master
+* Add this module as 'lamernews' module
+* have a node definition that looks like this:
+```
+node lamernewsnode {
 
-If your most recent release breaks compatibility or requires particular steps
-for upgrading, you may wish to include an additional section here: Upgrading
-(For an example, see http://forge.puppetlabs.com/puppetlabs/firewall).
+  class { 'redis::install':
+    redis_version  => '2.8.19-2.el7',
+    redis_package  => true,
+  } ->
+  redis::server {
+    'instance1':
+      redis_memory    => '1g',
+      redis_ip        => '0.0.0.0',
+      redis_port      => 10000,
+      redis_mempolicy => 'allkeys-lru',
+      redis_timeout   => 0,
+      redis_nr_dbs    => 16,
+      redis_loglevel  => 'notice',
+      running         => true,
+      enabled         => true
+  }
 
-## Usage
+  package {
+     'gcc-c++':
+      ensure => installed,
+    ;
+  }
+  class {'passenger':
+    passenger_version      => '5.0.8',
+    passenger_provider     => 'gem',
+    passenger_package      => 'passenger',
+    gem_path               => '/usr/local/share/gems/gems/',
+  }
 
-Put the classes, types, and resources for customizing, configuring, and doing
-the fancy stuff with your module here.
 
-## Reference
+#  class { 'apache':
+#  }
 
-Here, list the classes, types, providers, facts, etc contained in your module.
-This section should include all of the under-the-hood workings of your module so
-people know what the module is touching on their system but don't need to mess
-with things. (We are working on automating this section!)
+  class {'lamernews':}
+
+
+}
+```
+
+
+
 
 ## Limitations
 
-This is where you list OS compatibility, version compatibility, etc.
+This module was tested only with puppet 3.8, but it should work with any 3.x
+puppet version. It was also only tested with CentOS 7, because centos 6
+does not provide any ruby 1.9+ versions required by lamernews, where CentOS 7
+provides 2.0.
 
 ## Development
 
-Since your module is awesome, other users will want to play with it. Let them
-know what the ground rules for contributing are.
+This module is a proof of concept. You can contribute and fork, but since it's
+licenced under GPLv3 you are not allowed to use it without attribution. If you
+make changes you must publish them.
 
-## Release Notes/Contributors/Etc **Optional**
+## TODO
 
-If you aren't using changelog, put your release notes here (though you should
-consider using changelog). You may also add any additional sections you feel are
-necessary or important to include here. Please use the `## ` header.
+- There is an rpm for hiredis in epel, if it's new enough that could be used
+instead of the ruby gem.
+- Fix the pull request to puppet passenger for CentOS 7 because currently passenger is broken on 7.
+

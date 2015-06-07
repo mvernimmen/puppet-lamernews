@@ -3,6 +3,9 @@
 # This puppet module installs 
 # https://github.com/antirez/lamernews
 #
+# It requires having a redis installation (should be handled by some other
+# module.
+#
 # === Parameters
 #
 # None so far
@@ -25,8 +28,9 @@ class lamernews {
 
   package {
     # Not really required according to antirzet, but should make it go quicker
-    ['openssl',
-     'openssl-devel']: # Devel is needed for the rubysl-openssl gem.
+    ['openssl']:
+#     'openssl-devel']: # Devel is needed for the rubysl-openssl gem, but since this is also
+                       # provided by the passenger module, we leave it out here.
       ensure => 'installed';
     # Needed to compile hiredis
     'gcc':
@@ -48,7 +52,7 @@ class lamernews {
     'rubysl-openssl':
       ensure   => '2.1.0', # Newer versions need rubinius
       provider => 'gem',
-      require  => Package['openssl-devel'],
+#      require  => Package['openssl-devel'],
     ;
   }
 
