@@ -1,0 +1,14 @@
+{
+  "name": "mvernimmen-lamer2",
+  "version": "0.1.0",
+  "author": "M. Vernimmen",
+  "summary": "manage lamernews",
+  "license": "GPL",
+  "source": "github",
+  "project_page": "github",
+  "issues_url": "github",
+  "dependencies": [
+    {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"}
+  ]
+}
+
