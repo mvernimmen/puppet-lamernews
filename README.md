@@ -1,3 +1,5 @@
+# lamernews
+
 #### Table of Contents
 
 1. [Overview](#overview)
@@ -62,29 +64,16 @@ node lamernewsnode {
       enabled         => true
   }
 
-  package {
-     'gcc-c++':
-      ensure => installed,
-    ;
-  }
   class {'passenger':
-    passenger_version      => '5.0.8',
-    passenger_provider     => 'gem',
-    passenger_package      => 'passenger',
-    gem_path               => '/usr/local/share/gems/gems/',
+    passenger_version => '5.0.8',
+    package_provider  => 'gem',
+    passenger_package => 'passenger',
   }
-
-
-#  class { 'apache':
-#  }
 
   class {'lamernews':}
 
-
 }
 ```
-
-
 
 
 ## Limitations
@@ -104,5 +93,5 @@ make changes you must publish them.
 
 - There is an rpm for hiredis in epel, if it's new enough that could be used
 instead of the ruby gem.
-- Fix the pull request to puppet passenger for CentOS 7 because currently passenger is broken on 7.
-
+- -Fix the pull request to puppet passenger for CentOS 7 because currently passenger is broken on 7.- Use this version of passenger until it's been merged to the puppetlabs repo: https://github.com/ashish1099/puppetlabs-passenger.git
+- Make the gem versions parameterised and update the template and the gem installation to use the parameters. Or use hiera.

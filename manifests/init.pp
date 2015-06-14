@@ -37,17 +37,23 @@ class lamernews {
       ensure => 'installed';
   }
 
+  # Wished for by lamernews:
+  #gem 'sinatra','~> 1.4.2'
+  #gem 'redis','~> 3.0.4'
+  #gem 'hiredis', '~> 0.4.5'
+  #gem 'json', '~> 1.8.2'
+  #gem 'ruby-hmac', '~> 0.4.0'
+
 
   package {
     ['sinatra',
+     'bundler',
      'hiredis',
-     'json',
      'ruby-hmac',
      'rubysl-net-smtp']:
       ensure   => 'installed',
       provider => 'gem',
     ;
-
 
     'rubysl-openssl':
       ensure   => '2.1.0', # Newer versions need rubinius
@@ -55,6 +61,41 @@ class lamernews {
 #      require  => Package['openssl-devel'],
     ;
   }
+  package {
+    'json':
+      ensure => '1.8.2',
+      provider => 'gem',
+  }
+
+  # Now thet everything is in place, install the lamernews app
+  package { 'git':
+      ensure => installed,
+  }
+    
+  vcsrepo { "/var/www/html/":
+      ensure   => latest,
+      provider => git,
+      require  => [ Package["git"] ],
+      source   => "https://github.com/antirez/lamernews.git",
+      revision => 'master',
+  }->
+  # overwrite the gemfile if needed
+  file {
+    'gemfile':
+      ensure => present,
+      path   => '/var/www/html/Gemfile',
+      content => template('lamernews/gemfile.erb'),
+  }
 
 
+  #set up the vhost
+  apache::vhost { "lamernews.blendle.com":
+    docroot  => '/var/www/html',
+    priority => '10',
+  }
+  concat::fragment { "rails_config_for_lamernews":
+    target  => '10-lamernews.blendle.com.conf',
+    order   => 11,
+    content => '  RailsEnv development',
+  }
 }
