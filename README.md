@@ -30,7 +30,7 @@ proof of concept only.
 
 ### What lamernews affects
 
-* lamernews installs several gems.
+* lamernews installs several gems, creates a vhost, sets up passenger and deploys the lamernews ruby application.
 
 ### Setup Requirements **OPTIONAL**
 
@@ -38,6 +38,7 @@ It assumes several things have already been installed and configured:
 - redis (must listen on port 10000)
 - apache
 - passenger
+
 
 ### Beginning with lamernews
 
@@ -75,13 +76,22 @@ node lamernewsnode {
 }
 ```
 
+You may want to install the following puppet modules:
+* puppet module install dwerder/redis
+* puppet module install puppetlabs-vcsrepo
+* puppet module install puppetlabs-passenger (Use this one until the CentOS7 bug has been fixed: https://github.com/ashish1099/puppetlabs-passenger.git)
+
+And take the following steps:
+yum install epel-release
+
+You should then be able to run the agent and get a fully working lamernews set up for you.
 
 ## Limitations
 
 This module was tested only with puppet 3.8, but it should work with any 3.x
 puppet version. It was also only tested with CentOS 7, because centos 6
-does not provide any ruby 1.9+ versions required by lamernews, where CentOS 7
-provides 2.0.
+does not provide any ruby 1.9+ versions required by lamernews (unless using RVM),
+while CentOS 7 provides 2.0.
 
 ## Development
 
@@ -91,7 +101,11 @@ make changes you must publish them.
 
 ## TODO
 
-- There is an rpm for hiredis in epel, if it's new enough that could be used
-instead of the ruby gem.
+- There is an rpm for hiredis in epel, if it's new enough that could be used instead of the ruby gem.
 - -Fix the pull request to puppet passenger for CentOS 7 because currently passenger is broken on 7.- Use this version of passenger until it's been merged to the puppetlabs repo: https://github.com/ashish1099/puppetlabs-passenger.git
+
+## NICE TO HAVEs
+
+- Fore the lamernews repo and create releases, use release branches for checkout, remove the .git folder after the checkout.
 - Make the gem versions parameterised and update the template and the gem installation to use the parameters. Or use hiera.
+
